@@ -1,0 +1,225 @@
+<% include partials/header.ejs %>
+    <div class="container">
+        <div class="row ntop">
+            <div class="mainbox col-md-12">
+                <form id="orderform" class="form-horizontal" role="form" method="post" enctype="multipart/form-data">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <div class="panel-title">Vendor Location</div>
+                        </div>
+                        <div style="padding-top:30px" class="panel-body">
+                            <div class="form-group">
+                                <label for="name" class="col-md-3 control-label">Vendor Full Address
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <div class="col-md-9">
+                                    <input required id="autocomplete" autocomplete="off" onFocus="geolocate()" type="text" class="form-control" name="full_address"> or
+                                    <button type="button" id="getCurrentButton" onclick="getCurrentPosition()" class="btn btn-default" style="margin-top:10px">
+                                        <i class="fa fa-compass"></i> Current Location
+                                    </button>
+                                    <input class="field" id="street_number" type="hidden" name="street">
+                                    <input class="field" id="route" type="hidden" name='landmark'>
+                                    <input class="field" id="locality" type="hidden" name="city">
+                                    <input class="field" id="administrative_area_level_1" type="hidden" name="state">
+                                    <input class="field" id="postal_code" type="hidden" name="zip">
+                                    <input class="field" id="country" type="hidden" name="country">
+                                    <input class="field" id="lat" type="hidden" name="lat">
+                                    <input class="field" id="long" type="hidden" name="long">
+                                    <div id="map"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <% include partials/footer.ejs %>
+        <script>
+            var time = 0;
+            var placeSearch, autocomplete, start, buttonHtml;
+            var componentForm = {
+                street_number: 'long_name',
+                route: 'long_name',
+                locality: 'long_name',
+                administrative_area_level_1: 'long_name',
+                country: 'long_name',
+                postal_code: 'short_name'
+            };
+            var map, infoWindow, marker, pos;
+            function getCurrentPosition() {
+                buttonHtml = $("#getCurrentButton").html();
+                start = setInterval(function () {
+                    if (time > 10) {
+                        clearInterval(start);
+                        alert('Location not found, type manually');
+                        $("#getCurrentButton").html(buttonHtml);
+                        time = 0;
+                        return;
+                    }
+                    time++;
+                }, 1000);
+                if (navigator.geolocation) {
+                    $("#getCurrentButton").html("fetching location ...");
+                    navigator.geolocation.getCurrentPosition(function (position) {
+                        var geolocation = {
+                            lat: position.coords.latitude,
+                            lng: position.coords.longitude
+                        };
+                        getAddressbyLatLng(geolocation, onSuccess);
+                        marker.setPosition(geolocation);
+                        map.setCenter(geolocation);
+                    });
+                } else {
+                    clearInterval(start);
+                    time = 0;
+                    alert('Unsupported browser');
+                }
+            }
+            function fillInAddress() {
+                // Get the place details from the autocomplete object.
+                var place = autocomplete.getPlace();
+                for (var component in componentForm) {
+                    document.getElementById(component).value = '';
+                    document.getElementById(component).disabled = false;
+                }
+                // Get each component of the address from the place details
+                // and fill the corresponding field on the form.
+                for (var i = 0; i < place.address_components.length; i++) {
+                    var addressType = place.address_components[i].types[0];
+                    if (componentForm[addressType]) {
+                        var val = place.address_components[i][componentForm[addressType]];
+                        document.getElementById(addressType).value = val;
+                    }
+                }
+                document.getElementById('lat').value = place.geometry.location.lat();
+                document.getElementById('long').value = place.geometry.location.lng();
+                pos = {
+                    lat: place.geometry.location.lat(),
+                    lng: place.geometry.location.lng()
+                };
+                marker.setPosition(pos);
+                map.setCenter(pos);
+            }
+
+            function onSuccess(data) {
+                if (data && data.results.length) {
+                    var place = data.results[0];
+                    console.log(place);
+                    $("#autocomplete").val(place.formatted_address);
+                    for (var component in componentForm) {
+                        document.getElementById(component).value = '';
+                        document.getElementById(component).disabled = false;
+                    }
+                    for (var i = 0; i < place.address_components.length; i++) {
+                        var addressType = place.address_components[i].types[0];
+                        if (componentForm[addressType]) {
+                            var val = place.address_components[i][componentForm[addressType]];
+                            document.getElementById(addressType).value = val;
+                        }
+                    }
+                    document.getElementById('lat').value = place.geometry.location.lat;
+                    document.getElementById('long').value = place.geometry.location.lng;
+                } else {
+                    alert('Location not found, type manually');
+                }
+
+                clearInterval(start);
+                time = 0;
+                $("#getCurrentButton").html(buttonHtml);
+
+            }
+            function getAddressbyLatLng(geolocation, successCallback) {
+                $.ajax({
+                    type: "GET",
+                    url: "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + geolocation.lat + "," + geolocation.lng + "&key=AIzaSyDMI9-uTMcgufNmOudhRJxZ-82fpSnycqM",
+                    success: successCallback,
+                });
+            }
+            function geolocate() {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(function (position) {
+                        var geolocation = {
+                            lat: position.coords.latitude,
+                            lng: position.coords.longitude
+                        };
+                        var circle = new google.maps.Circle({
+                            center: geolocation,
+                            radius: position.coords.accuracy
+                        });
+                        autocomplete.setBounds(circle.getBounds());
+                    });
+                }
+            }
+            function initMap() {
+                // Create the autocomplete object, restricting the search to geographical
+                // location types.
+                autocomplete = new google.maps.places.Autocomplete(
+                          /** @type {!HTMLInputElement} */(document.getElementById('autocomplete')),
+                    { types: ['geocode'] });
+                // When the user selects an address from the dropdown, populate the address
+                // fields in the form.
+                autocomplete.addListener('place_changed', fillInAddress);
+                map = new google.maps.Map(document.getElementById('map'), {
+                    center: { lat: 26.899368, lng: 80.825687 },
+                    zoom: 20,
+                });
+                marker = new google.maps.Marker({
+                    position: { lat: 26.899368, lng: 80.825687 },
+                    map: map,
+                });
+                google.maps.event.addListener(map, 'center_changed', function (evt) {
+                    //                 window.setTimeout(function() {
+                    //   map.panTo(marker.getPosition());
+                    // }, 3000);
+                    window.setTimeout(function () {
+                        var center = map.getCenter();
+                        marker.setPosition(center);
+                        console.log(marker.getPosition());
+                            getAddressbyLatLng({
+                            lat: marker.getPosition().lat(),
+                            lng: marker.getPosition().lng()
+                        }, onSuccess)
+                    }, 100);
+                    // getAddressbyLatLng({
+                    //     lat: evt.latLng.lat(),
+                    //     lng: evt.latLng.lng()
+                    // }, onSuccess);
+                });
+
+                infoWindow = new google.maps.InfoWindow;
+                // Try HTML5 geolocation.
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(function (position) {
+                        pos = {
+                            lat: position.coords.latitude,
+                            lng: position.coords.longitude
+                        };
+                        marker.setPosition(pos);
+                        //infoWindow.setContent('Location found.');
+                        //infoWindow.open(map);
+                        map.setCenter(pos);
+                    }, function () {
+                        handleLocationError(true, infoWindow, map.getCenter());
+                    });
+                } else {
+                    // Browser doesn't support Geolocation
+                    handleLocationError(false, infoWindow, map.getCenter());
+                }
+            }
+        </script>
+        <style>
+            #map {
+                height: 400px;
+                width: 100%;
+            }
+        </style>
+        <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDMI9-uTMcgufNmOudhRJxZ-82fpSnycqM&libraries=places&callback=initMap">
+        </script>
+        <!-- function handleLocationError(browserHasGeolocation, infoWindow, pos) {
+            infoWindow.setPosition(pos);
+            infoWindow.setContent(browserHasGeolocation ?
+                'Error: The Geolocation service failed.' :
+                'Error: Your browser doesn\'t support geolocation.');
+            infoWindow.open(map);
+        } -->

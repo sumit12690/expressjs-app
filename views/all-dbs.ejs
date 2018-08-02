@@ -1,0 +1,183 @@
+<% include partials/header.ejs %>
+    <div class="container">
+        <div class="row ntop">
+            <div class="col-md-3">
+                <p>
+                    <a href="/content" class="btn btn-primary btn-sm">Back</a>
+                </p>
+                <div class="form-group">
+                    <label for="">Select DB</label>
+                    <form action="/content/all-dbs" id="dbChangeForm" method="post">
+                        <input type="hidden" name="dbName" id="dbNameChanged" value="<%= dbdata[0].dbname %>">
+                        <input type="hidden" name="dbId" id="dbIdChanged" value="<%= dbdata[0]._id %>">
+                        <input type="hidden" name="pageno" id="pageNo" value="<%= currentPage %>">
+                        <input type="hidden" id="totalPages" value="<%= totalPages %>">
+                    </form>
+                    <select class="form-control" id="dbChange">
+                        <% for(var i=0;i<db.length;i++) {%>
+                            <option <% if(currentdb==db[i].dbname) { %> selected
+                                <% } %> value="<%= db[i]._id %>"><%= db[i].dbname %></option>
+                            <% } %>
+                    </select>
+                    <div class="util-but">
+                        <a href="/content/add-db" class="btn btn-primary btn-sm btn-block">Add Database</a>
+                        <button onclick="showEditDBBox()" class="btn btn-warning btn-sm btn-block">Edit database Name/City
+                        </button>
+                        <form style="display:inline" action="/content/add-db" method="post">
+                            <input type="hidden" name="type" value="update">
+                            <input type="hidden" name="dbName" value="<%= dbdata[0].dbname %>">
+                            <input type="hidden" name="city" value="<%= dbdata[0].city %>">
+                            <input type="hidden" name="DBid" value="<%= dbdata[0]._id %>">
+                            <button type="submit" class="btn btn-info btn-sm btn-block mt-2">Add more numbers
+                            </button>
+                            <button onclick="deleteDB()" type="button" class="btn btn-danger btn-sm btn-block">Delete Database
+                            </button>
+                        </form>
+                    </div>
+                    <div class="util-text" style="display:none">
+                        <input type="hidden" id="changeDBId" value="<%= currentID || db[0]._id %>">
+                        <input type="text" class="form-control" id="changeDBName" value="<%= currentdb || db[0].dbname %>">
+                        <select name="city" class='form-control' id="changeCity">
+                                <option value=''>Choose City</option>
+                                <option value='gurgaon' 
+                                <% if(city=='gurgaon' || db[0].city=='gurgaon') { %>
+                                    Selected
+                                <% } %> >Gurgaon</option>
+                                <option value='patna' 
+                                <% if(city=='patna' || db[0].city=='patna') { %>
+                                    Selected
+                                <% } %> >Patna</option>
+                                <option value='kolkata' 
+                                <% if(city=='kolkata' || db[0].city=='kolkata') { %>
+                                    Selected
+                                <% } %> >Kolkata</option>
+                            </select>
+                        <button class="btn btn-success btn-sm save-dbName btn-block mt-2">Save</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-9">
+
+                <form id="editSingleForm" action="/content/edit-number" method="post">
+                    <table id="editLocalTable" style="display: none" class="mb-5 table table-bordered dt-responsive nowrap edit-number" cellspacing="0"
+                        width="100%">
+                        <thead>
+                            <tr>
+                                <th>Numbers
+                                </th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td width="55%">
+                                    <input type="hidden" name="oldnumber" id="oldnumber">
+                                    <input type="hidden" name="id" id="editDBId">
+                                    <input type="text" name="newnumber" id="newnumber">
+                                </td>
+                                <td width="45%">
+                                    <i style="cursor: pointer" onclick="saveSingleNumber()" class="fa fa-floppy-o text-info pr-2"></i>
+                                    <i style="cursor: pointer" onclick="hideEditDBNumber()" class="fa fa-times text-danger"></i>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </form>
+                <div class="row mt-4">
+                    <div class="col-md-3">
+                        &nbsp;
+                    </div>
+                    <div class="col-md-7">&nbsp;</div>
+                    <div class="col-md-2 float-right">
+                        <input type="text"  placeholder="Go to page" class="form-control text-center jumpToPage">
+                    </div>
+                </div>
+                <table class="table table-sm table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+                    <thead>
+                        <tr>
+                            <th>Numbers
+                            </th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% for(var j=0;j<dbdata[0].contactno.length;j++){%>
+                            <tr>
+                                <td>
+                                    <%= dbdata[0].contactno[j] %>
+                                </td>
+                                <td>
+                                    <i style="cursor: pointer" onclick="editDBNumber('<%= dbdata[0].contactno[j] %>','<%= dbdata[0]._id %>')" class="fa fa-pencil text-info pr-2"></i>
+                                    <i style="cursor: pointer" onclick="deleteDBNumber('<%= dbdata[0].contactno[j] %>')" class="fa fa-trash text-danger"></i>
+                                </td>
+                            </tr>
+                            <% } %>
+                    </tbody>
+                </table>
+                <div class="row text-center">
+                    <div class="col-md-3 text-left">Total Pages:
+                        <%= totalPages %>
+                    </div>
+                    <div class="col-md-9 ">
+                        <div class="float-right">
+                            <button class="btn btn-primary prevPage btn-sm" onclick="goToPage('prev')">
+                                <i class="fa fa-angle-double-left" aria-hidden="true"></i>
+                            </button>
+                            <h5 style="display:inline">
+                                <%= currentPage %>
+                            </h5>
+                            <button class="btn btn-primary nextPage btn-sm" onclick="goToPage('next')">
+                                <i class="fa fa-angle-double-right" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <form id="deleteDBForm" action="/content/delete-db" method="post">
+        <input type="hidden" id="deleteDBId" name="DBid" value="<%= dbdata[0]._id %>">
+        <input type="hidden" id="deleteDBName" name="dbname" value="<%= dbdata[0].dbname %>">
+    </form>
+    <form id="deleteDBNumberForm" action="/content/delete-number" method="post">
+        <input type="hidden" id="deleteDBIdNumber" name="DBid" value="<%= dbdata[0]._id %>">
+        <input type="hidden" id="deleteDBNumber" name="number">
+    </form>
+    <% include partials/footer.ejs %>
+        <script>
+            if (getUrlParameter('added') == 'true' || getUrlParameter('updated') == 'true' || getUrlParameter('delete') == 'true') {
+                $.confirm({
+                    title: 'Success!',
+                    content: getUrlParameter('msg'),
+                    type: 'green',
+                    typeAnimated: true,
+                    buttons: {
+                        OK: {
+                            btnClass: 'btn-success',
+                            action: function () {
+                                history.pushState(null, "", location.href.split("?")[0]);
+                            }
+                        }
+                    }
+                });
+            }
+            if (getUrlParameter('added') == 'false' || getUrlParameter('updated') == 'false' || getUrlParameter('delete') == 'false') {
+                $.confirm({
+                    title: 'Error!',
+                    content: getUrlParameter('msg'),
+                    type: 'red',
+                    theme: 'material',
+                    typeAnimated: true,
+                    buttons: {
+                        OK: {
+                            btnClass: 'btn-danger',
+                            action: function () {
+                                history.pushState(null, "", location.href.split("?")[0]);
+                            }
+                        }
+                    }
+                });
+            }
+        </script>
+        <script src="/js/content-sms.js"></script>

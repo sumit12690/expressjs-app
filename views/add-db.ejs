@@ -1,0 +1,117 @@
+<% include partials/header.ejs %>
+    <div class="container">
+        <div class="row ntop">
+            <div class="col-md-2">&nbsp;</div>
+            <div class="col-md-8 text-center">
+                <% if(showTextBox){ %>
+                    <div class="md-form">
+                        <label for="dbname">Enter DB Name</label>
+                        <input type="text" class="form-control" id="dbname">
+                    </div>
+                    <% }else{ %>
+                        <h3><%= dbName %></h3>
+                        <% } %>
+                    
+            </div>
+            <div class="col-md-2">&nbsp;</div>
+            <div class="col-md-8 text-center">
+                <% if(showTextBox){ %>
+                    <div class="md-form">
+                        <label for="city">Choose city</label>
+                        <select name="city" class='form-control' id="city">
+                            <option value=''>Choose City</option>
+                            <option value='gurgaon'>Gurgaon</option>
+                            <option value='patna'>Patna</option>
+                            <option value='kolkata'>Kolkata</option>
+                        </select>
+                    </div>
+                    <% }else{ %>
+                        <h3><%= city %></h3>
+                        <% } %>
+                    
+            </div>
+            <div class="col-md-2">&nbsp;</div>
+            <div class="col-md-2">&nbsp;</div>
+            <div class="col-md-8">
+                <div class="float-left">
+                    <button onclick="window.history.go(-1)" type="button" class="btn btn-primary btn-sm">
+                        Back
+                    </button>
+                </div>
+                <!-- <div class="float-right">
+                    <button type="button" class="btn btn-success btn-sm app-number">
+                        <i class="fa fa-plus"></i>
+                    </button>
+                </div> -->
+                <table class="mb-5 table table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+                    <thead>
+                        <tr>
+                            <th>Numbers</th>
+                            <!-- <th>Action</th> -->
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="add-number-tr">
+                            <td >
+                                <input type="hidden" id="DBid" value="<%= DBid %>">
+                                <input type="hidden" id="saveType" value="<%= type %>">
+                                <textarea class="form-control"  name="db_numbers" id="numbers_tags"></textarea>
+                            </td>
+                            <!-- <td width="30%">
+                                <input type="number" maxlength="10" name="db_numbers" id="numbers">
+                            </td>
+                            <td width="30%">
+                                <input type="number" maxlength="10" name="db_numbers" id="numbers">
+                            </td> -->
+                            <!-- <td width="10%">
+
+                            </td> -->
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="float-right">
+                    <button type="button" class="btn btn-primary save-db">Save</button>
+                    <button type="button" onclick="window.history.go(-1);" class="btn btn-danger">Cancel</button>
+                </div>
+            </div>
+            <div class="col-md-2">&nbsp;</div>
+        </div>
+    </div>
+    <% include partials/footer.ejs %>
+        <script>
+            if (getUrlParameter('added') == 'true' || getUrlParameter('updated') == 'true' || getUrlParameter('delete') == 'true') {
+                $.confirm({
+                    title: 'Success!',
+                    content: getUrlParameter('msg'),
+                    type: 'green',
+                    typeAnimated: true,
+                    buttons: {
+                        OK: {
+                            btnClass: 'btn-success',
+                            action: function () {
+                                history.pushState(null, "", location.href.split("?")[0]);
+                            }
+                        }
+                    }
+                });
+
+            }
+            if (getUrlParameter('added') == 'false' || getUrlParameter('updated') == 'false' || getUrlParameter('delete') == 'false') {
+                $.confirm({
+                    title: 'Error!',
+                    content: getUrlParameter('msg'),
+                    type: 'red',
+                    theme: 'material',
+                    typeAnimated: true,
+                    buttons: {
+                        OK: {
+                            btnClass: 'btn-danger',
+                            action: function () {
+                                history.pushState(null, "", location.href.split("?")[0]);
+                            }
+                        }
+                    }
+                });
+            }
+        </script>
+        <script src="/js/content-sms.js"></script>

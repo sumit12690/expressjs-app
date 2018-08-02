@@ -1,0 +1,94 @@
+<% include partials/header.ejs %>
+    <div class="container">
+        <div class="row">
+            <div class="mainbox col-md-12">
+                <p>
+                    <a href="/vendors/add-vendors" class="btn btn-primary">Add Vendors</a>
+                </p>
+                <% if (Object.keys(result).length !== 0) { %>
+                    <table id="myContentTable" class="table table-sm table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Vendor Desc</th>
+                                <th>Subscription Type</th>
+                                <th>Billing Start date</th>
+                                <th>Billing End date</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% Object.values(result).forEach(result => { %>
+                                <tr>
+                                    <td>
+                                        <%= result.vendor_name %>
+                                    </td>
+                                    <td>
+                                        <%= result.vendor_desc %>
+                                    </td>
+                                    <td>
+                                        <%= result.subscription_type %>
+                                    </td>
+                                    <td>
+                                        <%= moment(result.billing_start_date).format("DD/MM/YY") %>
+                                    </td>
+                                    <td>
+                                        <%= moment(result.billing_end_date).format("DD/MM/YY") %>
+                                    </td>
+                                    <td>
+                                        <a href="/vendors/vendor-detail/<%= result._id %>">View</a> |
+                                        <a href="/vendors/update-vendor/<%= result._id %>">Edit</a> |
+                                        <a href="/vendors/delete-vendor/<%= result._id %>" onclick="return(ConfirmDelete())">Delete</a>
+                                    </td>
+                                </tr>
+                                <% }) %>
+                        </tbody>
+                    </table>
+                    <% } %>
+            </div>
+        </div>
+    </div>
+    <% include partials/footer.ejs %>
+        <script>
+            if (getUrlParameter('added') == 'true' || getUrlParameter('updated') == 'true' || getUrlParameter('delete') == 'true') {
+                $.confirm({
+                    title: 'Success!',
+                    content: getUrlParameter('msg'),
+                    type: 'green',
+                    typeAnimated: true,
+                    buttons: {
+                        OK: {
+                            btnClass: 'btn-success',
+                            action: function () {
+                                history.pushState(null, "", location.href.split("?")[0]);
+                            }
+                        }
+                    }
+                });
+
+            }
+            if (getUrlParameter('added') == 'false' || getUrlParameter('updated') == 'false' || getUrlParameter('delete') == 'false') {
+                $.confirm({
+                    title: 'Error!',
+                    content: getUrlParameter('msg'),
+                    type: 'red',
+                    theme: 'material',
+                    typeAnimated: true,
+                    buttons: {
+                        OK: {
+                            btnClass: 'btn-danger',
+                            action: function () {
+                                history.pushState(null, "", location.href.split("?")[0]);
+                            }
+                        }
+                    }
+                });
+            }
+            function ConfirmDelete() {
+                if (confirm("Are you sure want to delete this vendor?")) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        </script>

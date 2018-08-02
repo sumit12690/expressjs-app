@@ -1,0 +1,28 @@
+<% include layout/header %>
+    <div class="container">
+        <div class="row">
+            <div class="mainbox col-md-12">
+                <div class="panel panel-info">
+                    <div class="panel-heading">
+                        <div class="panel-title">Category Update Form</div>
+                    </div>
+                    <div style="padding-top:30px" class="panel-body">
+                        <form class="form-horizontal" role="form" method="post">
+                            <div class="form-group">
+                                <label for="catname" class="col-md-3 control-label">Category Name</label>
+                                <div class="col-md-9">
+                                    <input type="text" class="form-control" name="catname" placeholder="Category Name" value='<%= catData.catname %>'>
+                                </div>
+                            </div>
+                            <div style="margin-top:10px" class="form-group">
+                                <div class="col-sm-12 controls">
+                                    <button type="submit" class="btn btn-success">Update Category</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <% include layout/footer %>

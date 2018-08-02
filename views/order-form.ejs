@@ -1,0 +1,78 @@
+<% include layout/header %>
+<body id="clrblk">
+    <div class="container">   
+        <div id="loginbox" style="margin-top:50px;" class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">                   
+            <div class="panel panel-info" >
+                <div class="panel-heading">
+                    <div class="panel-title">Order Form</div>
+                </div>
+                <div style="padding-top:30px" class="panel-body" >
+                    <form id="orderform" class="form-horizontal" role="form" method="post">
+                        <div class="form-group">
+                            <label for="total_amount" class="col-md-3 control-label">Total Amount</label>
+                            <div class="col-md-9">
+                                <input type="text" class="form-control" name="total_amount" placeholder="Total Amount">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="paid_amount" class="col-md-3 control-label">Paid Amount</label>
+                            <div class="col-md-9">
+                                <input type="text" class="form-control" name="paid_amount" placeholder="Paid Amount">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="remain_amount" class="col-md-3 control-label">Remain Amount</label>
+                            <div class="col-md-9">
+                                <input type="text" class="form-control" name="remain_amount" placeholder="Remain Amount">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="transaction_id" class="col-md-3 control-label">Transaction Id</label>
+                            <div class="col-md-9">
+                                <input type="text" class="form-control" name="txnid" placeholder="Transaction Id">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="bnk_ref_nmbr" class="col-md-3 control-label">Bank Ref Number</label>
+                            <div class="col-md-9">
+                                <input type="text" class="form-control" name="bnk_ref_nmbr" placeholder="Bank Ref Number">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="bankname" class="col-md-3 control-label">Bank Name</label>
+                            <div class="col-md-9">
+                                <input type="text" class="form-control" name="bankname" placeholder="Bank Name">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="paymentmode" class="col-md-3 control-label">Payment Mode</label>
+                            <div class="col-md-9">
+                                <input type="text" class="form-control" name="paymentmode" placeholder="Payment Mode">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="txnamount" class="col-md-3 control-label">Transaction Amount</label>
+                            <div class="col-md-9">
+                                <input type="text" class="form-control" name="txnamount" placeholder="Transaction Amount">
+                            </div>
+                        </div>
+                        <!-- <div class="input-group">
+                            <div class="checkbox">
+                              <label>
+                                <input id="login-remember" type="checkbox" name="remember" value="1"> Remember me
+                              </label>
+                            </div>
+                        </div> -->
+                        <div style="margin-top:10px" class="form-group">
+                            <div class="col-sm-12 controls">
+                                <button type="submit" class="btn btn-success">Add to Orders</button>
+                            </div>
+                        </div>
+                    </form> 
+                </div>                    
+            </div> 
+        </div>
+    </div>
+</body>
+<% include layout/footer %>

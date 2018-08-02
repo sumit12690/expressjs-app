@@ -1,0 +1,31 @@
+<% include partials/header.ejs %>
+    <div class="container">
+        <div class="row ntop">
+            <% if(role=='Superadmin' || role=='Admin' || role=='category'){ %>
+                <div class="col-md-4">
+                    <div class="card mb-3">
+                        <div class="card-body text-center">
+                            <h4 class="card-title">
+                                Vendors</h4>
+                            <p>You can add vendors,edit and delete</p>
+                            <a class="btn btn-primary" href="/vendors/view-vendors">View Vendors</a>
+                            <a class="btn btn-primary" href="/vendors/add-vendors">Add Vendors</a>
+                        </div>
+                    </div>
+                </div>
+                <% } %>
+                <% if(role=='Superadmin' || role=='Admin'){ %>
+                <div class="col-md-4">
+                    <div class="card mb-3">
+                        <div class="card-body text-center">
+                            <h4 class="card-title">
+                                View Subscription Type</h4>
+                            <p>You can add Subscription,edit and delete</p>
+                            <a class="btn btn-primary" href="#">View</a>
+                        </div>
+                    </div>
+                </div>
+            <% } %>
+        </div>
+    </div>
+<% include partials/footer.ejs %>

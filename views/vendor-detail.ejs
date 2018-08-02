@@ -1,0 +1,177 @@
+<% include partials/header.ejs %>
+    <div class="container">
+        <div class="row ntop">
+            <div class="mainbox col-md-6">
+                <div class="table-responsive">
+                    <table class='table table-bordered'>
+                        <tr>
+                            <td>Business categroy</td>
+                            <td>
+                                <%= result.business_category.name %>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Business Sub category</td>
+                            <td>
+                                <%= result.business_subcategory.name %>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Vendor Name</td>
+                            <td>
+                                <%= result.vendor_name %>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Vendor Phone</td>
+                            <td>
+                                <%= result.vendor_phone.phone %>
+                                    <br>
+                                    <% if(result.vendor_phone.isOwner && result.vendor_phone.isOwner==true ){ %>
+                                        <small>This is Owner Number</small>
+                                        <br>
+                                        <% } %>
+                                            <% if(result.vendor_phone.isWhatsappSMS && result.vendor_phone.isWhatsappSMS==true ){ %>
+                                                <small>This is WhatsApp Number</small>
+                                                <% } %>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Vendor Other Phones</td>
+                            <td>
+                                <%= result.vendor_other_phones.map(function(item){return item.phone}) %>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Vendor Description</td>
+                            <td>
+                                <%= result.vendor_desc %>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Subscription Type</td>
+                            <td>
+                                <%= result.subscription_type %>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Billing Start Date</td>
+                            <td>
+                                <%= moment(result.billing_start_date).format("DD/MM/YY") %>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Billing End Date</td>
+                            <td>
+                                <%= moment(result.billing_end_date).format("DD/MM/YY") %>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Timings</td>
+                            <td>
+                                <table>
+                                    <% for(var i=0; i < week.length; i++) { %>
+                                        <tr>
+                                            <td style="padding-right:60px">
+                                                <%= week[i].name %>
+                                            </td>
+                                            <td>
+                                                <% if(result.vendor_timings.length && result.vendor_timings[i].startTime){ %>
+                                                    <%= result.vendor_timings[i].startTime+'  --'%>
+                                                        <% }else{ %>
+                                                            --
+                                                            <% } %>
+                                            </td>
+                                            <td>
+                                                <% if(result.vendor_timings.length && result.vendor_timings[i].endTime){ %>
+                                                    <%= ' '+result.vendor_timings[i].endTime %>
+                                                        <% }else{ %>
+                                                            --
+                                                            <% } %>
+                                            </td>
+                                        </tr>
+                                        <% } %>
+                                </table>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Additional Info</td>
+                            <td>
+                                <table>
+                                    <tr>
+                                        <td style="padding-right:60px">
+                                            Email
+                                        </td>
+                                        <td>
+                                            <%= result.additional_info.email %>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding-right:60px">
+                                            Website
+                                        </td>
+                                        <td>
+                                            <%= result.additional_info.website %>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding-right:60px">
+                                            Facebook
+                                        </td>
+                                        <td>
+                                            <%= result.additional_info.social_url.fb %>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding-right:60px">
+                                            Instagram
+                                        </td>
+                                        <td>
+                                            <%= result.additional_info.social_url.instagram %>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding-right:60px">
+                                            Twitter
+                                        </td>
+                                        <td>
+                                            <%= result.additional_info.social_url.twitter %>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding-right:60px">
+                                            Linkedin
+                                        </td>
+                                        <td>
+                                            <%= result.additional_info.social_url.linkedin %>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+            </div>
+            <div class="col-md-6">
+                <div class="row">
+                   <% for(var i=0;i<result.vendor_images.length;i++){ %>
+                       <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-image">
+                                    <div class="card-content">
+                                        <strong> Image <%= i+1 %></strong>
+                                    </div>
+                                    <img id="" <% if(result.vendor_images[i]){ %> src="<%= result.vendor_images[i].image_url %>"<% } %> width="200px" height="200px">
+                                </div>
+                            </div>
+                        </div>
+                    <% } %> 
+                </div>
+            </div>
+            <div class="col-md-12">
+                <a class="btn btn-primary" href="/vendors/view-vendors">Back To List</a>
+            </div>
+        </div>
+    </div>
+    <% include partials/footer.ejs %>

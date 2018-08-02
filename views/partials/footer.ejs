@@ -1,0 +1,130 @@
+<div class="footer-bottom navbar-fixed-bottom">
+
+    <div class="container">
+
+        <div class="row">
+
+            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+
+                <div class="copyright">
+
+                    © 2017, Adecity, All rights reserved
+
+                </div>
+
+            </div>
+
+            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+
+                <div class="design">
+
+                    Meriyam Online Services Pvt Ltd. Brand
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+<script src="/js/jquery.js"></script>
+<script src="/js/multi-input.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/js/bootstrap-select.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.js"></script>
+<script src="/js/jquery.caret.min.js"></script>
+<script src="/js/jquery.tag-editor.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.20.1/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.3/chosen.jquery.min.js"></script>
+<script src="/js/echo.js"></script>
+<script>
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip();
+        $('[data-toggle="popover"]').popover();
+    })
+    $(document).ready(function () {
+        $('#myUserTable').DataTable({
+            "columnDefs": [
+                { "className": "dt-center", "targets": [4] }
+            ],
+            "language": {
+                "search": "_INPUT_",
+                "searchPlaceholder": "Search records"
+            }
+        });
+        $('#myOrderTable').DataTable({
+            "columnDefs": [
+                { "className": "dt-center", "targets": [5, 7] }
+            ],
+            "language": {
+                "search": "_INPUT_",
+                "searchPlaceholder": "Search records"
+            }
+        });
+        $('#userMembers').DataTable({
+            "columnDefs": [
+                { "className": "dt-center", "targets": "_all" }
+            ],
+            "language": {
+                "search": "_INPUT_",
+                "searchPlaceholder": "Search records"
+            }
+        });
+        $('#myContentTable').DataTable({
+            "columnDefs": [
+                { "className": "dt-center", "targets": "_all" }
+            ],
+            "language": {
+                "search": "_INPUT_",
+                "searchPlaceholder": "Search records"
+            },
+        });
+        $('#myDataTable').DataTable({
+            "columnDefs": [
+                { "className": "dt-center", "targets": "_all" }
+            ],
+            "paging": false,
+            "info": false,
+            "searching": false
+        });
+        $('#editLocalTable').DataTable({
+            "columnDefs": [
+                { "className": "dt-center", "targets": "_all" }
+            ],
+            "paging": false,
+            "info": false,
+            "searching": false
+        });
+    });
+
+</script>
+</body>
+<script>
+    function getUrlParameter(sParam) {
+        var sPageURL = decodeURIComponent(window.location.search.substring(1)),
+            sURLVariables = sPageURL.split('&'),
+            sParameterName,
+            i;
+
+        for (i = 0; i < sURLVariables.length; i++) {
+            sParameterName = sURLVariables[i].split('=');
+
+            if (sParameterName[0] === sParam) {
+                return sParameterName[1] === undefined ? true : sParameterName[1];
+            }
+        }
+    };
+    $(document).ready(function () {
+        $('.add-local').on('click', function () {
+            showLocalityBox();
+        });
+        $('span#selected').text($('a.active-nav').text() || 'Choose Option');
+    });
+</script>
+
+</html>

@@ -1,0 +1,42 @@
+<% include layout/header %>
+
+    <body id="clrblk">
+        <div class="container">
+            <% if (Object.keys(results).length !== 0) { %>
+                <table width="100%" border="10" cellpadding="0" cellspacing="0">
+
+                    <tr>
+                        <td>
+                            <%= results[0].user[0].email %>
+                        </td>
+                        <td>
+                            <%= results[0].user[0].name %>
+                        </td>
+                        <td>
+                            <%= results[0].user[0].username %>
+                        </td>
+                        <td>
+                            <%= results[0].data.city.name %>
+                        </td>
+                        <td>
+                            <%= results[0].data.dimension.name %>
+                        </td>
+                        <td>
+                            <%= results[0].data.gsm.name %>
+                        </td>
+                        <td>
+                            <%= results[0].data.finish.name %>
+                        </td>
+                        <td>
+                            <%= results[0].data.totPrice %>
+                        </td>
+                        <td>
+                            <a href="/doorstep-media/list-cart">Back to list</a>
+                        </td>
+                    </tr>
+
+                </table>
+                <% } %>
+        </div>
+    </body>
+    <% include layout/footer %>

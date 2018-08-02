@@ -1,0 +1,261 @@
+<% include partials/header.ejs %>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3">
+                <a data-target="#addBizModal" data-toggle="modal" href="#" class="btn btn-primary btn-block">Add Category</a>
+            </div>
+            <div class="mainbox col-md-9">
+                <div id="editBizModal" class="modal fade" role="dialog">
+                    <div class="modal-dialog">
+
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">×</button>
+                                <h4 class="modal-title">Edit Business category</h4>
+                            </div>
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <input name="cat_id" type="hidden" id="cat_id">
+                                    <input name="cat_name" class="form-control" id="cat_name" type="text">
+                                </div>
+                                <div class="form-group">
+                                    <label for="">Category type</label>
+                                    <br>
+                                    <input class="cat_type" id="edit_bus" type="radio" name="cat_type" value="business">
+                                    <label for="edit_bus"> Business</label>
+                                    <input class="cat_type" id="edit_home" style="margin-left:10px" type="radio" name="cat_type" value="home">
+                                    <label for="edit_home"> Home (Regular)</label>
+                                </div>
+                                <div class="form-group">
+                                    <input type="text" id="sub_cat">
+                                </div>
+                                <div class="form-group">
+                                    <div>Sub Categories</div>
+                                    <ul class="list-group job_co_div">
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-success save-Cat">Save</button>
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div id="addBizModal" class="modal fade" role="dialog">
+                    <div class="modal-dialog">
+
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                            <form method="post" action="/bizz-category/add-category">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal">×</button>
+                                    <h4 class="modal-title">Add Business category</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="form-group">
+                                        <input placeholder="Enter Category Name" name="cat_name" class="form-control" id="cat_name" type="text">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="">Category type</label>
+                                        <br>
+                                        <input id="bus" type="radio" name="type" value="business">
+                                        <label for="bus"> Business</label>
+                                        <input id="hom" style="margin-left:10px" type="radio" name="type" value="home">
+                                        <label for="hom"> Home (Regular)</label>
+                                    </div>
+                                    <hr>
+                                    <% for(var i=0;i<3;i++){ %>
+                                        <div class="form-group">
+                                            <input placeholder="Enter Sub Category Name" name="sub_cat_name" class="form-control" id="sub_cat_name" type="text">
+                                        </div>
+                                        <% } %>
+                                            <small>You can add more sub categories in edit category form</small>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="submit" class="btn btn-success">Save</button>
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                                </div>
+                            </form>
+                        </div>
+
+                    </div>
+                </div>
+                <% if (result.length !== 0) { %>
+                    <table id="myContentTable" class="table table-sm table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Type</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% result.forEach(result => { %>
+                                <tr>
+                                    <td>
+                                        <%= result.catname %>
+                                    </td>
+                                    <td>
+                                        <%= result.type %>
+                                    </td>
+                                    <td>
+                                        <a data-target="#editBizModal" data-toggle="modal" href="#" onclick="editCat('<%= JSON.stringify(result) %>')">
+                                            <i class="fa fa-eye text-info"></i>
+                                        </a> &nbsp;&nbsp;
+                                        <a data-target="#editBizModal" data-toggle="modal" href="#" onclick="editCat('<%= JSON.stringify(result) %>')">
+                                            <i class="fa fa-pencil text-success"></i>
+                                        </a> &nbsp;&nbsp;
+                                        <a href="/bizz-category/delete-category/<%= result._id %>" Onclick="return(ConfirmDelete())">
+                                            <i class="fa fa-trash text-danger"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                <% }) %>
+                        </tbody>
+                    </table>
+                    <% } %>
+            </div>
+        </div>
+    </div>
+    <% include partials/footer.ejs %>
+        <script>
+            $('#sub_cat').tagEditor({
+                delimiter: ',', /* comma */
+                placeholder: 'Enter Sub Category Separated by comma ...',
+                forceLowercase: true,
+            });
+            if (getUrlParameter('added') == 'true' || getUrlParameter('updated') == 'true' || getUrlParameter('delete') == 'true') {
+                $.confirm({
+                    title: 'Success!',
+                    content: getUrlParameter('msg'),
+                    type: 'green',
+                    typeAnimated: true,
+                    buttons: {
+                        OK: {
+                            btnClass: 'btn-success',
+                            action: function () {
+                                history.pushState(null, "", location.href.split("?")[0]);
+                            }
+                        }
+                    }
+                });
+
+            }
+            if (getUrlParameter('added') == 'false' || getUrlParameter('updated') == 'false' || getUrlParameter('delete') == 'false') {
+                $.confirm({
+                    title: 'Error!',
+                    content: getUrlParameter('msg'),
+                    type: 'red',
+                    theme: 'material',
+                    typeAnimated: true,
+                    buttons: {
+                        OK: {
+                            btnClass: 'btn-danger',
+                            action: function () {
+                                history.pushState(null, "", location.href.split("?")[0]);
+                            }
+                        }
+                    }
+                });
+            }
+            function editCat(data) {
+                var cat = JSON.parse(data);
+                $("#editForm").show();
+                $("#cat_id").val(cat._id);
+                if (cat.type == "home") {
+                    $("#edit_home").prop('checked', true);
+                    $("#edit_bus").removeProp('checked');
+                } else {
+                    $("#edit_bus").prop('checked', true);
+                    $("#edit_home").removeProp('checked');
+                }
+                $("#cat_type").val(cat.type);
+                $("#cat_name").val(cat.catname);
+                $(".job_co_div").html("");
+                $.ajax({
+                    type: "POST",
+                    url: "/bizz-category/get-sub-category",
+                    data: { "id": cat._id },
+                    success: function (data) {
+                        if (!data.sub_category.length) {
+                            $(".job_co_div").append("<li class='list-group-item'>No Sub Category Found</li>");
+                            return;
+                        }
+                        for (var i = 0; i < data.sub_category.length; i++) {
+                            $(".job_co_div").append("<li class='list-group-item " + i + "'>" + data.sub_category[i].sub_cat_name + " <span onclick=\"deleteSubCategory('" + data.sub_category[i]._id + "','" + i + "')\" class='close'>X</span> </li>");
+                        }
+
+                    }
+                });
+
+            }
+            $(".save-Cat").click(function () { //add job compnay to job type
+                var cat_name = $('#cat_name').val();
+                if (cat_name == "") {
+                    alert('Please Enter category name');
+                    return;
+                }
+                var sub_cat = $('#sub_cat').tagEditor('getTags')[0].tags;
+                var cat_id = $("#cat_id").val();
+                var type = $('input[name=cat_type]:checked').val();
+                var dataString = {
+                    cat_id: cat_id,
+                    cat_name: cat_name,
+                    sub_cat: sub_cat,
+                    type: type
+                }
+                $.ajax({
+                    type: "POST",
+                    url: "/bizz-category/update-category",
+                    data: JSON.stringify(dataString),
+                    contentType: "application/json; charset=utf-8",
+                    success: function (data) {
+                        console.log(data);
+                        if (data.success) {
+                            window.location.href = "/bizz-category/?updated=true&msg=Category Successfully updated"
+                        } else {
+                            $.alert({
+                                title: 'Oops!',
+                                content: data.msg,
+                            });
+                            return;
+                        }
+                    }
+                });
+            });
+            function ConfirmDelete() {
+                if (confirm("Are you sure want to delete this Business category?")) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+            function deleteSubCategory(sub_cat_id, index) { //delete sub cat
+                var cat_id = $("#cat_id").val();
+                var sub_cat_id=sub_cat_id;
+                var query = {
+                    cat_id: cat_id,
+                    sub_cat_id: sub_cat_id
+                }
+                $.ajax({
+                    type: "POST",
+                    url: "/bizz-category/delete-sub-category",
+                    data: JSON.stringify(query),
+                    contentType: "application/json; charset=utf-8",
+                    success: function (data) {
+                        if (data.success) {
+                            $(".list-group-item." + index).hide();
+                        } else {
+                            $.alert({
+                                title: 'Oops!',
+                                content: data.msg,
+                            });
+                            return;
+                        }
+                    }
+                });
+            }
+        </script>

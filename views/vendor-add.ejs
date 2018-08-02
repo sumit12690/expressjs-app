@@ -1,0 +1,641 @@
+<% include partials/header.ejs %>
+    <div class="container">
+        <div class="row ntop">
+            <div class="col-md-12 form-group">
+                <a href="/vendors" class="btn btn-primary">Go Back</a>
+            </div>
+            <div class="mainbox col-md-12">
+                <form id="orderform" class="form-horizontal" role="form" method="post" enctype="multipart/form-data">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <div class="panel-title">Vendor Basic Info</div>
+                        </div>
+                        <div style="padding-top:30px" class="panel-body">
+                            <% if(categoryList.length != 0) { %>
+                                <div class="form-group">
+                                    <label for="name" class="col-md-3 control-label">Vendor Category</label>
+                                    <div class="col-md-9">
+                                        <select name="cat_id" class="form-control chosen-select category">
+                                                <option value=''>Select Category</option>
+                                            <% categoryList.forEach(category=> { %>
+                                                <option value="<%= category.id %>" <% if(vendorData.cat_id==category.id) { %>
+                                                    selected
+                                                    <% } %>
+                                                        >
+                                                        <%= category.catname %>
+                                                </option>
+                                                <% })  %>
+                                        </select>
+                                        <input type="hidden" id="old_subcat_id" name="old_subcat_id" value="<%= vendorData.subcat_id %>">
+                                    </div>
+                                </div>
+                                <% } %>
+                                    <div class="form-group subcategory_div" style="display: none;">
+                                        <label for="name" class="col-md-3 control-label">Vendor SubCategory</label>
+                                        <div class="col-md-9">
+                                            <select name="subcat_id" class="form-control subcategory_dropdown">
+                                                <option value=''>Select SubCategory</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="name" class="col-md-3 control-label">Vendor Name
+                                            <span class="text-danger">*</span>
+                                        </label>
+                                        <div class="col-md-9">
+                                            <input type="text" class="form-control" name="vendor_name" placeholder="Vendor Name" value='<%= vendorData.vendor_name %>'>
+                                        </div>
+                                    </div>
+                                    <div id='phone_div'>
+                                        <div class="form-group first_phone_div">
+                                            <label for="name" class="col-md-3 control-label">Vendor Phone
+                                                <span class="text-danger">*</span>
+                                            </label>
+                                            <div class="col-md-3">
+                                                <input type="text" class="form-control" name="vendor_phone" placeholder="Vendor Phone">
+                                            </div>
+                                            <div class="col-md-4">
+                                                <input name="isOwner" value="1" type="checkbox">Owner
+                                                <input name="isManager" value="1" type="checkbox">Manager
+                                                <input name="isWhatsapp" value="1" type="checkbox" class='isWhatsapp' onClick="calculate(this,'isWhatsapp')">Whatsapp
+                                                <input name="isCall" value="1" type="checkbox" class='isCall' onClick="calculate(this,'isCall',2)">Call
+                                                <input name="isSMS" value="1" type="checkbox" class='isSMS' onClick="calculate(this,'isSMS',3)">SMS
+                                            </div>
+                                            <div class="col-md-2 add_more_div">
+                                                <button type="button" class="btn primary add add_more">
+                                                    <span class="glyphicon glyphicon-plus-sign"></span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="profile_url" class="col-md-3 control-label">Vendor Description
+                                            <span class="text-danger">*</span>
+                                        </label>
+                                        <div class="col-md-9">
+                                            <input type="text" class="form-control" name="vendor_desc" placeholder="Vendor Description" value='<%= vendorData.vendor_desc %>'>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="subscription_type" class="col-md-3 control-label">Subscription Type
+                                            <span class="text-danger">*</span>
+                                        </label>
+                                        <div class="col-md-9">
+                                            <select class="form-control" name="subscription_type" required>
+                                                <option value='bronze' <% if(vendorData.subscription_type) { if(vendorData.subscription_type=='bronze' ) { %> selected
+                                                    <% }} %>>Bronze</option>
+                                                <option value='silver' <% if(vendorData.subscription_type) { if(vendorData.subscription_type=='silver' ) { %> selected
+                                                    <% }} %>>Silver</option>
+                                                <option value='gold' <% if(vendorData.subscription_type) { if(vendorData.subscription_type=='gold' ) { %> selected
+                                                    <% }} %>>Gold</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    
+                        </div>
+                    </div>
+                    <div class="panel panel-primary">
+                            <div class="panel-heading">
+                                <div class="panel-title">Vendor Location</div>
+                            </div>
+                            <div style="padding-top:30px" class="panel-body">
+                                <div class="form-group">
+                                    <label for="name" class="col-md-3 control-label">Vendor Full Address
+                                        <span class="text-danger">*</span>
+                                    </label>
+                                    <div class="col-md-9">
+                                        <input required id="autocomplete" autocomplete="off" onFocus="geolocate()" onblur="getLatLngByAddress()" type="text" class="form-control" name="full_address"
+                                            value='<%= vendorData.full_address %>'> or
+                                        <button type="button" id="getCurrentButton" onclick="getCurrentPosition()" class="btn btn-default" style="margin-top:10px">
+                                            <i class="fa fa-compass"></i> Current Location</button>
+                                        <input class="field" id="street_number" type="hidden" name="street" value='<%= vendorData.street %>'>
+                                        <input class="field" id="route" type="hidden" name='landmark' value='<%= vendorData.landmark %>'>
+                                        <input class="field" id="locality" type="hidden" name="city" value='<%= vendorData.city %>'>
+                                        <input class="field" id="administrative_area_level_1" type="hidden" name="state" value='<%= vendorData.state %>'>
+                                        <input class="field" id="postal_code" type="hidden" name="zip" value='<%= vendorData.zip %>'>
+                                        <input class="field" id="country" type="hidden" name="country">
+                                        <input class="field" id="lat" type="hidden" name="lat" value='<%= vendorData.lat %>'>
+                                        <input class="field" id="long" type="hidden" name="long" value='<%= vendorData.long %>'>
+                                        <br> Or drag map to location
+                                        <div id="map"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel panel-primary">
+                                <div class="panel-heading">
+                                    <div class="panel-title">Vendor Timings</div>
+                                </div>
+                                <div style="padding-top:30px" class="panel-body">
+                                    <div class="form-group">
+                                        <div class="col-md-12 col-md-offset-3">
+                                            <input value="true" id="isLater" name="willDoLater" type="checkbox"> <label for="isLater"> I will Do it Later</label> 
+                                        </div>
+                                    </div>
+                                    <% for(var i=0; i < week.length; i++) { %>
+                                        <div class="form-group">
+                                            <div class="col-md-12">
+                                                <div class="row">
+                                                    <div class="col-md-3">
+                                                        <%= week[i].name %>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <select name="startTime" class="form-control">
+                                                            <% for(var j=0; j < time.length; j++) { %>
+                                                                <option value="<%= time[j].value %>" <% if(vendorData.startTime) if(vendorData.startTime.length && vendorData.startTime[i] == time[j].value) { %> selected <% } %>>
+                                                                    <%= time[j].name %>
+                                                                </option>
+                                                            <% } %>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <select name="endTime" class="form-control">
+                                                            <% for(var k=0; k < time.length; k++) { %>
+                                                                <option value="<%= time[k].value %>" <% if(vendorData.endTime) if(vendorData.endTime.length && vendorData.endTime[i] == time[k].value) { %> selected <% } %>>
+                                                                    <%= time[k].name %>
+                                                                </option>
+                                                                <% } %>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <label>
+                                                            <input value="<%= week[i].value %>" name="isclosed" type="checkbox" 
+                                                            <% if(vendorData.isclosed) 
+                                                            if(vendorData.isclosed.length) 
+                                                             if(vendorData.isclosed.includes(week[i].value)) { %> 
+                                                                checked 
+                                                                <% }  %>>  Closed 
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <% } %>
+                                </div>
+                            </div>
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <div class="panel-title">Vendor Pictures</div>
+                        </div>
+                        <div style="padding-top:30px" class="panel-body">
+
+                            <div class="form-group">
+                                <label for="profile_url" class="col-md-3 control-label">Profile Image 1</label>
+                                <div class="col-md-4">
+                                    <input type="file" name="upload" onchange="readURL(this);" id='profile_image1'>
+                                    <img id="profile_image1_preview" width="50px" height="50px">
+                                </div>
+                                <div class="col-md-4">
+                                    <input type="radio" name="primary_image" value="1"> Primary
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="profile_url" class="col-md-3 control-label">Profile Image 2</label>
+                                <div class="col-md-4">
+                                    <input type="file" name="upload" onChange="readURL(this);" id='profile_image2'>
+                                    <img id="profile_image2_preview" width="50px" height="50px">
+                                </div>
+                                <div class="col-md-4">
+                                    <input type="radio" name="primary_image" value="2"> Primary
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="profile_url" class="col-md-3 control-label">Profile Image 3</label>
+                                <div class="col-md-4">
+                                    <input type="file" name="upload" onChange="readURL(this);" id='profile_image3'>
+                                    <img id="profile_image3_preview" width="50px" height="50px">
+                                </div>
+                                <div class="col-md-4">
+                                    <input type="radio" name="primary_image" value="3"> Primary
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="profile_url" class="col-md-3 control-label">Profile Image 4</label>
+                                <div class="col-md-4">
+                                    <input type="file" name="upload" onChange="readURL(this);" id='profile_image4'>
+                                    <img id="profile_image4_preview" width="50px" height="50px">
+                                </div>
+                                <div class="col-md-4">
+                                    <input type="radio" name="primary_image" value="4"> Primary
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="profile_url" class="col-md-3 control-label">Profile Image 5</label>
+                                <div class="col-md-4">
+                                    <input type="file" name="upload" onChange="readURL(this);" id='profile_image5'>
+                                    <img id="profile_image5_preview" width="50px" height="50px">
+                                </div>
+                                <div class="col-md-4">
+                                    <input type="radio" name="primary_image" value="5"> Primary
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <div class="panel-title">Vendor Addition Info.</div>
+                        </div>
+                        <div style="padding-top:30px" class="panel-body">
+                            <div class="form-group">
+                                <label class="col-md-3 control-label">Vendor Email</label>
+                                <div class="col-md-9">
+                                    <input type="email" class="form-control" name="vendor_email" value='<%= vendorData.vendor_email %>'>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-3 control-label">Vendor Website</label>
+                                <div class="col-md-9">
+                                    <input type="text" class="form-control" name="vendor_website" value='<%= vendorData.vendor_website %>'>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-3 control-label">Vendor Facebook link</label>
+                                <div class="col-md-9">
+                                    <input type="text" class="form-control" name="vendor_fb_link" value='<%= vendorData.vendor_fb_link %>'>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-3 control-label">Vendor Twitter Link</label>
+                                <div class="col-md-9">
+                                    <input type="text" class="form-control" name="vendor_twitter_link" value='<%= vendorData.vendor_twitter_link %>'>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-3 control-label">Vendor Instagram Link</label>
+                                <div class="col-md-9">
+                                    <input type="text" class="form-control" name="vendor_instagram_link" value='<%= vendorData.vendor_instagram_link %>'>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-3 control-label">Vendor Linkedin Link</label>
+                                <div class="col-md-9">
+                                    <input type="text" class="form-control" name="vendor_linkedin_link" value='<%= vendorData.vendor_linkedin_link %>'>
+                                    <input type='hidden' id='errormsg' value='<%= errorData.msg %>'>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="margin-top:10px" class="form-group">
+                        <div class="col-sm-12 controls">
+                            <button type="submit" class="btn btn-success">Add to Vendors</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <% include partials/footer.ejs %>
+        <% if(errorData.error) { %>
+            <script>
+                $.confirm({
+                    title: 'Error!',
+                    content: $('#errormsg').val(),
+                    type: 'red',
+                    theme: 'material',
+                    typeAnimated: true,
+                    buttons: {
+                        OK: {
+                            btnClass: 'btn-danger'
+                        }
+                    }
+                });
+            </script>
+            <% } %>
+<script>
+    var reloadSubcategory = function (select, output) {
+        if ($(select).val()) {
+            $.ajax({
+                type: "POST",
+                url: "/bizz-category/get-sub-category",
+                data: { id: $(select).val() },
+                success: function (result) {
+                    var subcategoryOptions = "<option value=''>Select SubCategory</option>";
+                    if (result.sub_category && result.sub_category.length > 0) {
+                        result.sub_category.forEach(subcategory => {
+                            subcategoryOptions += "<option value='" + subcategory._id + "'>" + subcategory.sub_cat_name + "</option>";
+                        });
+                        $(output).selectpicker('destroy');
+                        $(output).html(subcategoryOptions);
+                        $('.subcategory_div').show();
+                        // $(output).chosen({ width: "100%" });
+                        $(output).selectpicker({
+                            liveSearch: true,
+                            maxOptions: 1
+                        });
+                    }
+                    else {
+                        // $(output).chosen('destroy');
+                        $(output).selectpicker('destroy');
+                        $(output).html(subcategoryOptions);
+                        $('.subcategory_div').hide();
+                    }
+                }
+            });
+        } else {
+            //  $(output).chosen('destroy');
+            $(output).html("<option value=''>Select SubCategory</option>");
+        }
+    };
+    $(document).ready(function () {
+            $('select.category').change(function () {
+                reloadSubcategory('select.category', 'select.subcategory_dropdown');
+            });
+            $('select.category').trigger('change');
+            $('select.category').selectpicker({
+                liveSearch: true,
+                maxOptions: 1
+            });
+           // $('select.phone_use').selectpicker();
+        });
+    if (getUrlParameter('added') == 'true' || getUrlParameter('updated') == 'true' || getUrlParameter('delete') == 'true') {
+        $.confirm({
+            title: 'Success!',
+            content: getUrlParameter('msg'),
+            type: 'green',
+            typeAnimated: true,
+            buttons: {
+                OK: {
+                    btnClass: 'btn-success',
+                    action: function () {
+                        history.pushState(null, "", location.href.split("?")[0]);
+                    }
+                }
+            }
+        });
+    }
+    if (getUrlParameter('added') == 'false' || getUrlParameter('updated') == 'false' || getUrlParameter('delete') == 'false') {
+        $.confirm({
+            title: 'Error!',
+            content: getUrlParameter('msg'),
+            type: 'red',
+            theme: 'material',
+            typeAnimated: true,
+            buttons: {
+                OK: {
+                    btnClass: 'btn-danger',
+                    action: function () {
+                        history.pushState(null, "", location.href.split("?")[0]);
+                    }
+                }
+            }
+        });
+    }
+    function readURL(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                document.getElementById(input.id + '_preview').src = e.target.result;
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+    // $(document).ready(function () {
+    //     $('#vendor_other_phones').multiInput({
+    //         plusBtnClass: 'btn-success',
+    //         minusBtnClass: 'btn-danger',
+    //         maxInput: 5
+    //     });
+    // });
+</script>
+<script>
+    var time = 0;
+    var placeSearch, autocomplete, start, buttonHtml;
+    var componentForm = {
+        street_number: 'long_name',
+        route: 'long_name',
+        locality: 'long_name',
+        administrative_area_level_1: 'long_name',
+        country: 'long_name',
+        postal_code: 'short_name'
+    };
+    var map, pos;
+    function getCurrentPosition() {
+        buttonHtml = $("#getCurrentButton").html();
+        start = setInterval(function () {
+            if (time > 10) {
+                clearInterval(start);
+                alert('Location not found, type manually');
+                $("#getCurrentButton").html(buttonHtml);
+                time = 0;
+                return;
+            }
+            time++;
+        }, 1000);
+        if (navigator.geolocation) {
+            $("#getCurrentButton").html("fetching location ...");
+            navigator.geolocation.getCurrentPosition(function (position) {
+                var geolocation = {
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude
+                };
+                getAddressbyLatLng(geolocation, onSuccess);
+                map.setCenter(geolocation);
+            });
+        } else {
+            clearInterval(start);
+            time = 0;
+            alert('Unsupported browser');
+        }
+    }
+    function fillInAddress() {
+        // Get the place details from the autocomplete object.
+        var place = autocomplete.getPlace();
+        for (var component in componentForm) {
+            document.getElementById(component).value = '';
+            document.getElementById(component).disabled = false;
+        }
+        // Get each component of the address from the place details
+        // and fill the corresponding field on the form.
+        for (var i = 0; i < place.address_components.length; i++) {
+            var addressType = place.address_components[i].types[0];
+            if (componentForm[addressType]) {
+                var val = place.address_components[i][componentForm[addressType]];
+                document.getElementById(addressType).value = val;
+            }
+        }
+        document.getElementById('lat').value = place.geometry.location.lat();
+        document.getElementById('long').value = place.geometry.location.lng();
+        pos = {
+            lat: place.geometry.location.lat(),
+            lng: place.geometry.location.lng()
+        };
+        map.setCenter(pos);
+    }
+
+    function onSuccess(data) {
+        console.log(data);
+        if (data && data.results.length) {
+            var place = data.results[0];
+            $("#autocomplete").val(place.formatted_address);
+            for (var component in componentForm) {
+                document.getElementById(component).value = '';
+                document.getElementById(component).disabled = false;
+            }
+            for (var i = 0; i < place.address_components.length; i++) {
+                var addressType = place.address_components[i].types[0];
+                if (componentForm[addressType]) {
+                    var val = place.address_components[i][componentForm[addressType]];
+                    document.getElementById(addressType).value = val;
+                }
+            }
+            document.getElementById('lat').value = place.geometry.location.lat;
+            document.getElementById('long').value = place.geometry.location.lng;
+        } else {
+            alert('Location not found, type manually');
+        }
+        clearInterval(start);
+        time = 0;
+        $("#getCurrentButton").html(buttonHtml);
+    }
+
+    function getAddressbyLatLng(geolocation, successCallback) {
+        $.ajax({
+            type: "GET",
+            url: "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + geolocation.lat + "," + geolocation.lng + "&key=AIzaSyDMI9-uTMcgufNmOudhRJxZ-82fpSnycqM",
+            success: successCallback,
+        });
+    }
+
+    function getLatLngByAddress() {
+        geocoder = new google.maps.Geocoder();
+        if (geocoder) {
+            geocoder.geocode({
+                'address': document.getElementById("autocomplete").value
+            }, function (results, status) {
+                if (status == google.maps.GeocoderStatus.OK) {
+                    console.log(results);
+                    if (results) {
+                        for (var component in componentForm) {
+                            document.getElementById(component).value = '';
+                            document.getElementById(component).disabled = false;
+                        }
+                        for (var i = 0; i < results[0].address_components.length; i++) {
+                            var addressType = results[0].address_components[i].types[0];
+                            if (componentForm[addressType]) {
+                                var val = results[0].address_components[i][componentForm[addressType]];
+                                document.getElementById(addressType).value = val;
+                            }
+                        }
+                        document.getElementById('lat').value = results[0].geometry.location.lat();
+                        document.getElementById('long').value = results[0].geometry.location.lng();
+                        map.setCenter({
+                            lat: results[0].geometry.location.lat(),
+                            lng: results[0].geometry.location.lng()
+                        });
+                    }
+                }
+            });
+        }
+    }
+    function geolocate() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function (position) {
+                var geolocation = {
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude
+                };
+                var circle = new google.maps.Circle({
+                    center: geolocation,
+                    radius: position.coords.accuracy
+                });
+                autocomplete.setBounds(circle.getBounds());
+            });
+        }
+    }
+    function initMap() {
+        // Create the autocomplete object, restricting the search to geographical
+        // location types.
+        autocomplete = new google.maps.places.Autocomplete(
+                                         /** @type {!HTMLInputElement} */(document.getElementById('autocomplete')),
+            { types: ['geocode'] });
+        // When the user selects an address from the dropdown, populate the address
+        // fields in the form.
+        autocomplete.addListener('place_changed', fillInAddress);
+        map = new google.maps.Map(document.getElementById('map'), {
+            center: { lat: 28.4594965, lng: 77.0266383 },
+            zoom: 10,
+            fullscreenControl: false,
+            mapTypeControl: false,
+            streetViewControl: false,
+        });
+        $('<div/>').addClass('centerMarker').appendTo(map.getDiv());
+        google.maps.event.addListener(map, 'dragend', function (evt) {
+            var center = map.getCenter();
+            getAddressbyLatLng({
+                lat: center.lat(),
+                lng: center.lng()
+            }, onSuccess)
+        });
+        // Try HTML5 geolocation.
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function (position) {
+                pos = {
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude
+                };
+                getAddressbyLatLng(pos, onSuccess)
+                map.setCenter(pos);
+            }, function () {
+                handleLocationError(true, infoWindow, map.getCenter());
+            });
+        }
+    }
+</script>
+<style>
+    #map {
+        height: 400px;
+        width: 100%;
+    }
+
+    #map .centerMarker {
+        position: absolute;
+        /*url of the marker*/
+        background: url(http://maps.gstatic.com/mapfiles/markers2/marker.png) no-repeat;
+        /*center the marker*/
+        top: 50%;
+        left: 50%;
+        z-index: 1;
+        /*fix offset when needed*/
+        margin-left: -10px;
+        margin-top: -34px;
+        /*size of the image*/
+        height: 34px;
+        width: 20px;
+        cursor: pointer;
+    }
+</style>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDMI9-uTMcgufNmOudhRJxZ-82fpSnycqM&libraries=places&callback=initMap"
+    async defer></script>
+    <script>
+        $('body').delegate('.add_more', 'click', function () {
+            var count = $('.first_phone_div').length;
+            if (count < 5) {
+                //var totalsize = parseInt($('.first_phone_div').size());
+                $("#phone_div div:first").clone().find('.add_more_div').html('<button type="button" class="btn default remove"><span class="glyphicon glyphicon-minus-sign"></span></button>').end().find('label').text('').end().find('input[type=text]').val('').end().find('input[type=checkbox]').prop("value", parseInt($(".first_phone_div").length) + 1).end().find('input[type=checkbox]').prop("checked", false).end().appendTo("#phone_div");
+            }
+        });
+        $('body').delegate('.remove', 'click', function () {
+            $(this).parent().parent('.first_phone_div').remove();
+        });
+        var checked_array = {};
+        function calculate(current_element, class_name, limit = 1) {
+            let count = 0;
+            var inputs = document.getElementsByClassName(class_name);
+            if (checked_array[class_name]) {
+                if (current_element.checked) {
+                    if (checked_array[class_name].length >= limit) {
+                        var last_item = checked_array[class_name].pop();
+                        checked_array[class_name].push($("#phone_div ." + class_name).index(current_element));
+                        $("." + class_name).eq(last_item).prop('checked', false);
+                    } else {
+                        checked_array[class_name].push($("#phone_div ." + class_name).index(current_element));
+                    }
+                } else {
+                    var last_item = checked_array[class_name].pop();
+                }
+            }
+            else
+                checked_array[class_name] = [$("#phone_div ." + class_name).index(current_element)];
+                console.log(checked_array)
+        }
+    </script>

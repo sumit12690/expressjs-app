@@ -1,0 +1,36 @@
+<% include layout/header %>
+    <body>
+        <div class="container">
+            <div class="row">
+                <div class="mainbox col-md-12">
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            <div class="panel-title">Category Detail</div>
+                            <div style="float:right; font-size: 85%; position: relative; top:-10px">
+                                <a id="signinlink" href="/category/add-category">Add Vendor</a>
+                            </div>
+                            <div style="float:right;margin-right:100px; font-size: 85%; position: relative; top:-10px">
+                                <a id="signinlink" href="/category/get-category-json">Get JSON Data</a>
+                            </div>
+                        </div>
+                        <div class="panel-body">
+                            <table class='table'>
+                                <tr>
+                                    <td>Category Name</td>
+                                    <td>
+                                        <%= result.catname %>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan=2>
+                                        <a href="/category/category-list">Back To List</a>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+    <% include layout/footer %>
